@@ -2,25 +2,10 @@ import { useEffect, useState } from "react";
 import { BooksPage } from "./components/BooksPage";
 import CategoryModel from "../../Models/CategoryModel";
 import { fetchCategories } from "../../Service/CategoryService";
+import { CategoryPage } from "./components/CategoryPage";
 
 export const AdminPage = () => {
-    const [categories, setCategories] = useState<CategoryModel[]>([]);
-    const [httpError, setHttpError] = useState(null);
     
-    useEffect(() => {
-        fetchCategories().then((response: any) => {
-            const loadedCategories: CategoryModel[] = [];
-            for (let key in response) {
-                loadedCategories.push({
-                    id: response[key].id,
-                    name: response[key].name
-                })
-            }
-            setCategories(loadedCategories);
-        }).catch((error: any)=> {
-            setHttpError(error.message);
-        })
-    }, []);
 
     return(
         <div className='container'>
@@ -42,11 +27,11 @@ export const AdminPage = () => {
                 <div className='tab-content' id='nav-tabContent'>
                     <div className='tab-pane fade show active' id='nav-loans' role='tabpanel'
                         aria-labelledby='nav-loans-tab'>
-                            <BooksPage categories={categories}/>
+                            <BooksPage/>
                     </div>
                     <div className='tab-pane fade' id='nav-history' role='tabpanel'
                         aria-labelledby='nav-history-tab'>
-                        category
+                        <CategoryPage/>
                     </div>
                 </div>
             </div>

@@ -1,9 +1,10 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CategoryModel from "../../../Models/CategoryModel";
 import { BooksTable } from "./BooksTable";
 import { addBook } from "../../../Service/BookService";
+import { fetchCategories } from "../../../Service/CategoryService";
 
-export const BooksPage: React.FC<{categories: CategoryModel[]}> = (props) => {
+export const BooksPage = () => {
     const [title, setTitle] = useState('');
     const [author, setAuthor] = useState('');
     const [description, setDescription] = useState('');
@@ -19,6 +20,25 @@ export const BooksPage: React.FC<{categories: CategoryModel[]}> = (props) => {
     // Displays
     const [displayWarning, setDisplayWarning] = useState('');
     const [displaySuccess, setDisplaySuccess] = useState('');
+
+    const [categories, setCategories] = useState<CategoryModel[]>([]);
+    const [httpError, setHttpError] = useState(null);
+    
+    useEffect(() => {
+        fetchCategories().then((response: any) => {
+            const loadedCategories: CategoryModel[] = [];
+            for (let key in response) {
+                loadedCategories.push({
+                    id: response[key].id,
+                    name: response[key].name
+                })
+            }
+            setCategories(loadedCategories);
+            setHttpError(null);
+        }).catch((error: any)=> {
+            setHttpError(error.message);
+        })
+    }, []);
 
     function base64ConversionForImages(e: any) {
         if (e.target.files[0]) {
@@ -139,7 +159,7 @@ export const BooksPage: React.FC<{categories: CategoryModel[]}> = (props) => {
                                     Select
                                 </a>
                             </li>
-                            {props.categories.map(category => (
+                            {categories.map(category => (
                                 <li key={category.id} onClick={() => categoryField(category.id,category.name)}>
                                     <a className='dropdown-item'>
                                         {category.name}
@@ -172,7 +192,7 @@ export const BooksPage: React.FC<{categories: CategoryModel[]}> = (props) => {
         </div>
 
         <div className="container">
-            <BooksTable categories={props.categories} bookAdded={bookAdded}/>
+            <BooksTable categories={categories} bookAdded={bookAdded}/>
         </div>
         </>
     );

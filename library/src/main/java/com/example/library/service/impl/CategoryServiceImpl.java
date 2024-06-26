@@ -46,8 +46,8 @@ public class CategoryServiceImpl implements CategoryService{
 		Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with id:" + categoryId));
 		List<Book> books = bookRepository.findByCategory(category);
-		if(books != null) {
-			throw new LibraryAPIException(HttpStatus.CONFLICT,"Books are present with Category:"+categoryId);
+		if(!books.isEmpty()) {
+			throw new LibraryAPIException(HttpStatus.CONFLICT,"Books are present with Category:"+ category.getName());
 		}
 		categoryRepository.delete(category);
 		return "Category deleted successfully";
